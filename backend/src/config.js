@@ -21,6 +21,7 @@ export const config = {
   uploadDir: path.resolve(env.UPLOAD_DIR || './uploads'),
   adminEmail: env.ADMIN_EMAIL || '',
   adminPassword: env.ADMIN_PASSWORD || '',
-  resendApiKey: env.RESEND_API_KEY || '',
-  mailFrom: env.MAIL_FROM || 'EcoXarita <onboarding@resend.dev>',
+  brevoApiKey: env.BREVO_API_KEY || '',
+  mailFromEmail: env.MAIL_FROM_EMAIL || '',
+  mailFromName: env.MAIL_FROM_NAME || 'EcoXarita',
 };
