@@ -50,5 +50,5 @@ export const listQuerySchema = z.object({
   status: z.enum(STATUSES).optional(),
   onlyOpen: z.enum(['1', '0']).optional(),
   page: z.coerce.number().int().min(1).max(1000).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
+  limit: z.coerce.number().int().min(1).max(300).default(20),
 });
