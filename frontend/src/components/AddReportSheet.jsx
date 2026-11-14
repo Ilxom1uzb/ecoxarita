@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api.js';
 import { useI18n, useToast, errText } from '../context.jsx';
-import { WASTE_TYPES, UNITS } from '../wasteTypes.js';
+import { WASTE_TYPES, UNITS, wasteColor } from '../wasteTypes.js';
+import { Icon, WASTE_ICON } from './Icon.jsx';
 import Sheet from './Sheet.jsx';
 
 const MAX_PHOTO = 5 * 1024 * 1024;
+const MAX_VOL = 100000;
 
 export default function AddReportSheet({ center, onClose, onCreated }) {
   const { t, lang } = useI18n();
@@ -16,9 +18,11 @@ export default function AddReportSheet({ center, onClose, onCreated }) {
   const [duplicate, setDuplicate] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  // Oldindan ko'rish URL'i xotira oqishisiz tozalanadi
   useEffect(() => {
-    if (!photo) return setPreview(null);
+    if (!photo) {
+      setPreview(null);
+      return;
+    }
     const url = URL.createObjectURL(photo);
     setPreview(url);
     return () => URL.revokeObjectURL(url);
@@ -39,8 +43,9 @@ export default function AddReportSheet({ center, onClose, onCreated }) {
   async function submit(e) {
     e.preventDefault();
     setError('');
-    const vol = Number(form.volume_value);
-    if (!(vol > 0) || vol > 100000) return setError(t('volErr'));
+    // Ondalik vergul (1,5) ham qabul qilinadi
+    const vol = Number(String(form.volume_value).trim().replace(',', '.'));
+    if (!(vol > 0) || vol > MAX_VOL) return setError(t('volErr'));
     if (!center) return setError(t('locateFail'));
 
     const fd = new FormData();
@@ -49,8 +54,8 @@ export default function AddReportSheet({ center, onClose, onCreated }) {
     fd.append('volume_unit', form.volume_unit);
     fd.append('lat', String(center.lat));
     fd.append('lng', String(center.lng));
-    fd.append('address', form.address);
-    fd.append('description', form.description);
+    fd.append('address', form.address.trim());
+    fd.append('description', form.description.trim());
     if (photo) fd.append('photo', photo);
 
     setBusy(true);
@@ -99,22 +104,35 @@ export default function AddReportSheet({ center, onClose, onCreated }) {
   return (
     <Sheet title={t('addReport')} onClose={onClose}>
       <form className="form" onSubmit={submit} noValidate>
-        <p className="meta">
-          {t('pinHint')}
-          {center && <> · {t('coords')}: {center.lat.toFixed(5)}, {center.lng.toFixed(5)}</>}
-        </p>
+        {center && (
+          <div className="coord-chip">
+            <Icon name="pin" size={15} />
+            {center.lat.toFixed(5)}, {center.lng.toFixed(5)}
+          </div>
+        )}
 
-        <label className="field">
+        <div className="field">
           <span>{t('type')}</span>
-          <select value={form.waste_type} onChange={set('waste_type')}>
-            {WASTE_TYPES.map((w) => <option key={w.id} value={w.id}>{w.label[lang]}</option>)}
-          </select>
-        </label>
+          <div className="type-grid">
+            {WASTE_TYPES.map((w) => (
+              <button
+                type="button"
+                key={w.id}
+                className={`type-opt ${form.waste_type === w.id ? 'on' : ''}`}
+                style={{ '--c': wasteColor(w.id) }}
+                onClick={() => setForm((f) => ({ ...f, waste_type: w.id }))}
+              >
+                <Icon name={WASTE_ICON[w.id]} size={20} />
+                <small>{w.label[lang]}</small>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="row gap">
           <label className="field grow">
             <span>{t('volume')}</span>
-            <input inputMode="decimal" value={form.volume_value} onChange={set('volume_value')} required />
+            <input inputMode="decimal" placeholder="0" value={form.volume_value} onChange={set('volume_value')} required />
           </label>
           <label className="field">
             <span>{t('unit')}</span>
@@ -144,6 +162,7 @@ export default function AddReportSheet({ center, onClose, onCreated }) {
             </div>
           ) : (
             <label className="file-pick">
+              <Icon name="camera" size={20} />
               {t('choosePhoto')}
               <input type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={pickPhoto} hidden />
             </label>
@@ -151,7 +170,10 @@ export default function AddReportSheet({ center, onClose, onCreated }) {
         </div>
 
         {error && <p className="error" role="alert">{error}</p>}
-        <button className="btn primary block" disabled={busy}>{t('submit')}</button>
+        <button className="btn primary block" disabled={busy}>
+          <Icon name="check" size={18} strokeWidth={2.4} />
+          {t('submit')}
+        </button>
       </form>
     </Sheet>
   );

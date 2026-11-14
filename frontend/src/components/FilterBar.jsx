@@ -1,5 +1,6 @@
-import { WASTE_TYPES } from '../wasteTypes.js';
+import { WASTE_TYPES, wasteColor } from '../wasteTypes.js';
 import { useI18n } from '../context.jsx';
+import { Icon, WASTE_ICON } from './Icon.jsx';
 
 export const filterParams = (f) => ({
   ...(f.type && { type: f.type }),
@@ -9,15 +10,21 @@ export const filterParams = (f) => ({
 
 export default function FilterBar({ filters, setFilters }) {
   const { t, lang } = useI18n();
-  const toggleType = (id) => setFilters({ ...filters, type: filters.type === id ? null : id });
+  const pick = (id) => setFilters({ ...filters, type: filters.type === id ? null : id });
   return (
     <div className="chips" role="toolbar">
       <button className={`chip ${!filters.type ? 'on' : ''}`} onClick={() => setFilters({ ...filters, type: null })}>
+        <Icon name="map" size={15} />
         {t('all')}
       </button>
       {WASTE_TYPES.map((w) => (
-        <button key={w.id} className={`chip ${filters.type === w.id ? 'on' : ''}`} onClick={() => toggleType(w.id)}>
-          <i className="dot" style={{ background: w.color }} />
+        <button
+          key={w.id}
+          className={`chip ${filters.type === w.id ? 'on' : ''}`}
+          style={{ '--c': wasteColor(w.id) }}
+          onClick={() => pick(w.id)}
+        >
+          <Icon name={WASTE_ICON[w.id]} size={15} />
           {w.label[lang]}
         </button>
       ))}
@@ -25,6 +32,7 @@ export default function FilterBar({ filters, setFilters }) {
         className={`chip ${filters.onlyOpen ? 'on' : ''}`}
         onClick={() => setFilters({ ...filters, onlyOpen: !filters.onlyOpen })}
       >
+        <Icon name="clock" size={15} />
         {t('onlyOpen')}
       </button>
     </div>

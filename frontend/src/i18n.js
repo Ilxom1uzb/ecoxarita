@@ -141,3 +141,26 @@ export const DICT = {
     err_self_role: "You can't change your own role", err_bad_request: 'Bad request',
   },
 };
+
+// Qo'shimcha kalitlar: xarita, daraja va tanlash rejimi uchun
+Object.assign(DICT.uz, {
+  pickHere: 'Shu joyni tanlash', pickHint: 'Xaritani suring, pin joyni ko‘rsatadi',
+  cancelPick: 'Bekor qilish', accLow: 'Aniqlik past (±{m} m). Pinni qo‘lda suring',
+  locOk: 'Joylashuv aniqlandi (±{m} m)', myReports: 'Mening hisobotlarim',
+  points: 'ball', nextLevel: 'Keyingi darajagacha: {n} ball', maxLevel: 'Eng yuqori daraja',
+  lvl0: 'Yangi boshlovchi', lvl1: 'Faol fuqaro', lvl2: 'Eko-qahramon', lvl3: 'Shahar homiysi',
+});
+Object.assign(DICT.ru, {
+  pickHere: 'Выбрать это место', pickHint: 'Двигайте карту, метка покажет место',
+  cancelPick: 'Отмена', accLow: 'Низкая точность (±{m} м). Передвиньте метку вручную',
+  locOk: 'Местоположение найдено (±{m} м)', myReports: 'Мои отчёты',
+  points: 'баллов', nextLevel: 'До следующего уровня: {n} баллов', maxLevel: 'Максимальный уровень',
+  lvl0: 'Новичок', lvl1: 'Активный гражданин', lvl2: 'Эко-герой', lvl3: 'Хранитель города',
+});
+Object.assign(DICT.en, {
+  pickHere: 'Use this spot', pickHint: 'Move the map, the pin marks the spot',
+  cancelPick: 'Cancel', accLow: 'Low accuracy (±{m} m). Drag the pin to adjust',
+  locOk: 'Location found (±{m} m)', myReports: 'My reports',
+  points: 'points', nextLevel: '{n} points to the next level', maxLevel: 'Top level',
+  lvl0: 'Newcomer', lvl1: 'Active citizen', lvl2: 'Eco hero', lvl3: 'City guardian',
+});

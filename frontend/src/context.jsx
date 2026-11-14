@@ -26,7 +26,7 @@ export function Providers({ children }) {
   const notify = useCallback((msg) => {
     setToast({ msg, id: Date.now() });
     clearTimeout(timer.current);
-    timer.current = setTimeout(() => setToast(null), 2800);
+    timer.current = setTimeout(() => setToast(null), 3000);
   }, []);
   const toastValue = useMemo(() => ({ notify }), [notify]);
 
@@ -47,8 +47,19 @@ export function Providers({ children }) {
 export const useI18n = () => useContext(I18nCtx);
 export const useToast = () => useContext(ToastCtx);
 
-// Xato kodini tarjimaga aylantiradi (noma'lum kod uchun umumiy xabar)
+const FIELD_KEY = {
+  waste_type: 'type', volume_value: 'volume', volume_unit: 'unit', address: 'address',
+  description: 'description', lat: 'coords', lng: 'coords', email: 'email', password: 'password', name: 'name',
+};
+
+// Xato matnini tarjima qiladi. Validatsiya xatosida qaysi maydon noto'g'ri ekanini ham ko'rsatadi.
 export function errText(t, err) {
+  const issues = err?.data?.issues;
+  if (err?.code === 'validation' && Array.isArray(issues) && issues.length) {
+    const first = issues[0];
+    const field = FIELD_KEY[first.path] ? t(FIELD_KEY[first.path]) : first.path;
+    return `${t('err_validation')}: ${field}`;
+  }
   const key = `err_${err?.code}`;
   const s = t(key);
   return s === key ? t('err_server') : s;

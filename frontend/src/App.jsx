@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, getToken, clearToken } from './api.js';
-import { useI18n, useToast, errText } from './context.jsx';
+import { useI18n } from './context.jsx';
 import AuthScreen, { Logo } from './components/AuthScreen.jsx';
 import MapView from './components/MapView.jsx';
 import ReportList from './components/ReportList.jsx';
@@ -8,23 +8,24 @@ import ReportSheet from './components/ReportSheet.jsx';
 import AddReportSheet from './components/AddReportSheet.jsx';
 import StatsView from './components/StatsView.jsx';
 import AdminView from './components/AdminView.jsx';
+import ProfileView from './components/ProfileView.jsx';
 import LangSwitch from './components/LangSwitch.jsx';
 import FilterBar from './components/FilterBar.jsx';
+import { Icon } from './components/Icon.jsx';
 
 const EMPTY_FILTERS = { type: null, onlyOpen: false, status: null };
 
 export default function App() {
   const { t } = useI18n();
-  const { notify } = useToast();
 
   const [user, setUser] = useState(null);
   const [booting, setBooting] = useState(() => Boolean(getToken()));
   const [tab, setTab] = useState('map');
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [center, setCenter] = useState(null);
-  const [openId, setOpenId] = useState(null);
+  const [addCenter, setAddCenter] = useState(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [openId, setOpenId] = useState(null);
   const [online, setOnline] = useState(() => navigator.onLine);
 
   const isMod = user && (user.role === 'moderator' || user.role === 'admin');
@@ -38,7 +39,6 @@ export default function App() {
     setFilters(EMPTY_FILTERS);
   }, []);
 
-  // Sessiyani tiklash
   useEffect(() => {
     if (!getToken()) return;
     api
@@ -48,15 +48,11 @@ export default function App() {
       .finally(() => setBooting(false));
   }, []);
 
-  // Token muddati tugaganda (api.js signali) ilova login ekraniga qaytadi
+  // Token muddati tugasa (api.js signali), login ekraniga qaytish
   useEffect(() => {
-    const onLogout = () => {
-      resetSession();
-      notify(t('err_unauthorized'));
-    };
-    window.addEventListener('ex:logout', onLogout);
-    return () => window.removeEventListener('ex:logout', onLogout);
-  }, [resetSession, notify, t]);
+    window.addEventListener('ex:logout', resetSession);
+    return () => window.removeEventListener('ex:logout', resetSession);
+  }, [resetSession]);
 
   useEffect(() => {
     const on = () => setOnline(true);
@@ -77,31 +73,21 @@ export default function App() {
     resetSession();
   };
 
-  const deleteAccount = async () => {
-    if (!window.confirm(t('deleteAccountConfirm'))) return;
-    try {
-      await api.deleteMe();
-      notify(t('accountDeleted'));
-      clearToken();
-      resetSession();
-    } catch (e) {
-      notify(errText(t, e));
-    }
-  };
-
   const tabs = [
-    { id: 'map', icon: '🗺', label: t('tabMap') },
-    { id: 'list', icon: '📋', label: t('tabList') },
-    { id: 'mine', icon: '👤', label: t('tabMine') },
-    { id: 'stats', icon: '📊', label: t('tabStats') },
-    ...(isMod ? [{ id: 'admin', icon: '🛡', label: t('tabAdmin') }] : []),
+    { id: 'map', icon: 'map', label: t('tabMap') },
+    { id: 'list', icon: 'list', label: t('tabList') },
+    { id: 'mine', icon: 'user', label: t('tabMine') },
+    { id: 'stats', icon: 'chart', label: t('tabStats') },
+    ...(isMod ? [{ id: 'admin', icon: 'shield', label: t('tabAdmin') }] : []),
   ];
 
   return (
     <div className="shell">
       <header className="topbar">
         <div className="brand">
-          <Logo size={26} />
+          <span className="brand-mark">
+            <Icon name="leaf" size={18} strokeWidth={2.2} />
+          </span>
           <h1>EcoXarita</h1>
         </div>
         <LangSwitch />
@@ -116,8 +102,10 @@ export default function App() {
             setFilters={setFilters}
             refreshKey={refreshKey}
             onOpen={setOpenId}
-            onCenter={setCenter}
-            onAdd={() => setAddOpen(true)}
+            onPick={(center) => {
+              setAddCenter(center);
+              setAddOpen(true);
+            }}
           />
         )}
 
@@ -129,17 +117,16 @@ export default function App() {
         )}
 
         {tab === 'mine' && (
-          <div className="page">
-            <div className="card profile">
-              <b>{user.name}</b>
-              <div className="meta">{user.email} · {t(`role_${user.role}`)}</div>
-              <div className="row gap">
-                <button className="btn ghost grow" onClick={logout}>{t('logout')}</button>
-                <button className="btn danger grow" onClick={deleteAccount}>{t('deleteAccount')}</button>
-              </div>
-            </div>
-            <ReportList mine onOpen={setOpenId} refreshKey={refreshKey} />
-          </div>
+          <ProfileView
+            user={user}
+            onOpen={setOpenId}
+            refreshKey={refreshKey}
+            onLogout={logout}
+            onDeleted={() => {
+              clearToken();
+              resetSession();
+            }}
+          />
         )}
 
         {tab === 'stats' && <StatsView />}
@@ -149,18 +136,18 @@ export default function App() {
       <nav className="tabbar" aria-label="navigation">
         {tabs.map((x) => (
           <button key={x.id} className={`tab ${tab === x.id ? 'on' : ''}`} onClick={() => setTab(x.id)}>
-            <span aria-hidden="true">{x.icon}</span>
+            <span className="tab-ico">
+              <Icon name={x.icon} size={20} />
+            </span>
             <span>{x.label}</span>
           </button>
         ))}
       </nav>
 
-      {openId && (
-        <ReportSheet id={openId} user={user} onClose={() => setOpenId(null)} onChanged={bump} />
-      )}
+      {openId && <ReportSheet id={openId} user={user} onClose={() => setOpenId(null)} onChanged={bump} />}
       {addOpen && (
         <AddReportSheet
-          center={center}
+          center={addCenter}
           onClose={() => setAddOpen(false)}
           onCreated={() => {
             setAddOpen(false);

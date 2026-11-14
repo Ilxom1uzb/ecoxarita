@@ -3,8 +3,10 @@ import { api } from '../api.js';
 import { useI18n, useToast, errText } from '../context.jsx';
 import { wasteColor, wasteLabel, unitLabel } from '../wasteTypes.js';
 import { filterParams } from './FilterBar.jsx';
+import { Icon, WASTE_ICON } from './Icon.jsx';
 
 const PAGE = 20;
+const statusKey = (s) => ({ new: 'statusNew', in_progress: 'statusInProgress', cleaned: 'statusCleaned', hidden: 'statusHidden' }[s] || 'statusNew');
 
 export default function ReportList({ filters, mine = false, onOpen, refreshKey }) {
   const { t, lang } = useI18n();
@@ -17,7 +19,6 @@ export default function ReportList({ filters, mine = false, onOpen, refreshKey }
 
   const key = JSON.stringify(filters);
 
-  // Filtr yoki ma'lumot o'zgarganda birinchi sahifani qayta yuklash
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -58,29 +59,49 @@ export default function ReportList({ filters, mine = false, onOpen, refreshKey }
     }
   }, [page, key]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (ready && !items.length) return <div className="empty">{t('emptyList')}</div>;
+  if (ready && !items.length) {
+    return (
+      <div className="empty">
+        <span className="empty-ico">
+          <Icon name="leaf" size={34} />
+        </span>
+        <p>{t('emptyList')}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="report-list">
       {items.map((r) => (
-        <button key={r.id} className="card report-card" onClick={() => onOpen(r.id)}>
-          <div className="card-top">
-            <span className="badge" style={{ background: wasteColor(r.waste_type) }}>
-              {wasteLabel(r.waste_type, lang)}
+        <button key={r.id} className="card report-card" style={{ '--c': wasteColor(r.waste_type) }} onClick={() => onOpen(r.id)}>
+          <span className="rc-icon">
+            <Icon name={WASTE_ICON[r.waste_type]} size={22} />
+          </span>
+          <span className="rc-body">
+            <span className="card-top">
+              <span className="rc-title">{wasteLabel(r.waste_type, lang)}</span>
+              <span className={`pill s-${r.status}`}>{t(statusKey(r.status))}</span>
             </span>
-            <span className="pill">{t(`status${camel(r.status)}`)}</span>
-          </div>
-          <div className="meta">
-            {r.volume_value} {unitLabel(r.volume_unit, lang)}
-            {r.address ? ` · ${r.address}` : ''}
-          </div>
-          <div className="meta row-between">
-            <span>{new Date(r.created_at).toLocaleDateString(lang)}</span>
-            <span>
-              👍 {r.confirmations}
-              {r.is_mine && <b className="mine"> · {t('you')}</b>}
+            <span className="meta-line">
+              <b>
+                {r.volume_value} {unitLabel(r.volume_unit, lang)}
+              </b>
+              {r.address && (
+                <span className="addr">
+                  <Icon name="pin" size={13} /> {r.address}
+                </span>
+              )}
             </span>
-          </div>
+            <span className="foot">
+              <span>
+                <Icon name="clock" size={13} /> {new Date(r.created_at).toLocaleDateString(lang)}
+              </span>
+              <span>
+                <Icon name="thumb" size={13} /> {r.confirmations}
+              </span>
+              {r.is_mine && <span className="mine-tag">{t('you')}</span>}
+            </span>
+          </span>
         </button>
       ))}
       {loading && <div className="muted center">{t('loading')}</div>}
@@ -92,5 +113,3 @@ export default function ReportList({ filters, mine = false, onOpen, refreshKey }
     </div>
   );
 }
-
-const camel = (s) => ({ new: 'New', in_progress: 'InProgress', cleaned: 'Cleaned', hidden: 'Hidden' }[s] || 'New');
