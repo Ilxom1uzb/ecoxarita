@@ -52,3 +52,8 @@ export const listQuerySchema = z.object({
   page: z.coerce.number().int().min(1).max(1000).default(1),
   limit: z.coerce.number().int().min(1).max(300).default(20),
 });
+
+export const verifySchema = z.object({
+  email,
+  code: z.string().trim().regex(/^\d{6}$/, 'code'),
+});

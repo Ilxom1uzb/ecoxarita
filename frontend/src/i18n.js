@@ -168,3 +168,25 @@ Object.assign(DICT.en, {
 Object.assign(DICT.uz, { satellite: 'Sputnik / Xarita' });
 Object.assign(DICT.ru, { satellite: 'Спутник / Карта' });
 Object.assign(DICT.en, { satellite: 'Satellite / Map' });
+
+Object.assign(DICT.uz, {
+  codeTitle: 'Tasdiqlash kodi', codeSent: '{email} manziliga 6 xonali kod yubordik. Kod 10 daqiqa amal qiladi.',
+  codeSpam: 'Xat kelmasa, spam papkasini tekshiring', resend: 'Kodni qayta yuborish',
+  resendIn: 'Qayta yuborish: {s} s', back: 'Orqaga', enterCode: 'Kodni kiriting', verify: 'Tasdiqlash',
+  err_code_invalid: "Kod noto'g'ri yoki muddati o'tgan", err_too_soon: "Iltimos, biroz kutib qayta so'rang",
+  err_mail_failed: "Kod yuborib bo'lmadi. Keyinroq urinib ko'ring",
+});
+Object.assign(DICT.ru, {
+  codeTitle: 'Код подтверждения', codeSent: 'Мы отправили 6-значный код на {email}. Код действует 10 минут.',
+  codeSpam: 'Если письма нет, проверьте папку «Спам»', resend: 'Отправить код повторно',
+  resendIn: 'Повторно через {s} с', back: 'Назад', enterCode: 'Введите код', verify: 'Подтвердить',
+  err_code_invalid: 'Неверный или просроченный код', err_too_soon: 'Подождите немного и попробуйте снова',
+  err_mail_failed: 'Не удалось отправить код. Попробуйте позже',
+});
+Object.assign(DICT.en, {
+  codeTitle: 'Verification code', codeSent: 'We sent a 6-digit code to {email}. It is valid for 10 minutes.',
+  codeSpam: 'If you do not see it, check your spam folder', resend: 'Resend code',
+  resendIn: 'Resend in {s} s', back: 'Back', enterCode: 'Enter the code', verify: 'Verify',
+  err_code_invalid: 'Wrong or expired code', err_too_soon: 'Please wait a moment and try again',
+  err_mail_failed: "Couldn't send the code. Try again later",
+});

@@ -273,3 +273,15 @@ h4 { font-size: 15px; margin: 16px 0 8px; }
   .sheet { border-radius: 24px; margin-bottom: 40px; }
   .overlay { align-items: center; }
 }
+
+/* ---------- Kod tasdiqlash ---------- */
+.code-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px; }
+.code-head h3 { font-size: 19px; margin-bottom: 4px; }
+.code-head p { margin: 0; font-size: 14px; }
+.code-head p.small { font-size: 12.5px; margin-top: 6px; }
+.code-ico {
+  width: 46px; height: 46px; border-radius: 14px; flex-shrink: 0; background: var(--mint);
+  color: var(--forest); display: flex; align-items: center; justify-content: center;
+}
+.code-input { text-align: center; font-size: 26px !important; letter-spacing: 10px; font-weight: 600; }
+.code-foot { margin-top: 14px; }

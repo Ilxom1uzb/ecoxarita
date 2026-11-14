@@ -50,6 +50,8 @@ async function request(path, { method = 'GET', body, form, auth = true } = {}) {
 export const api = {
   register: (b) => request('/auth/register', { method: 'POST', body: b, auth: false }),
   login: (b) => request('/auth/login', { method: 'POST', body: b, auth: false }),
+  registerVerify: (b) => request('/auth/register/verify', { method: 'POST', body: b, auth: false }),
+  loginVerify: (b) => request('/auth/login/verify', { method: 'POST', body: b, auth: false }),
   me: () => request('/auth/me'),
   deleteMe: () => request('/auth/me', { method: 'DELETE' }),
 
