@@ -164,3 +164,7 @@ Object.assign(DICT.en, {
   points: 'points', nextLevel: '{n} points to the next level', maxLevel: 'Top level',
   lvl0: 'Newcomer', lvl1: 'Active citizen', lvl2: 'Eco hero', lvl3: 'City guardian',
 });
+
+Object.assign(DICT.uz, { satellite: 'Sputnik / Xarita' });
+Object.assign(DICT.ru, { satellite: 'Спутник / Карта' });
+Object.assign(DICT.en, { satellite: 'Satellite / Map' });

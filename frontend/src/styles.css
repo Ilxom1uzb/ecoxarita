@@ -151,6 +151,8 @@ h4 { font-size: 15px; margin: 16px 0 8px; }
   background: var(--surface); border: none; box-shadow: var(--shadow); color: var(--forest);
   display: flex; align-items: center; justify-content: center;
 }
+.fab.basemap { bottom: 152px; }
+.fab.basemap.is-on { color: #fff; background: var(--forest); }
 .add-fab {
   position: absolute; left: 50%; transform: translateX(-50%); bottom: 22px; z-index: 500;
   display: inline-flex; align-items: center; gap: 8px;

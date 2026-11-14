@@ -10,6 +10,9 @@ import FilterBar, { filterParams } from './FilterBar.jsx';
 const TILE_URL = import.meta.env.VITE_TILE_URL || 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const START = { center: [41.38, 64.59], zoom: 6 };
 const MAX_MARKERS = 300;
+const SAT_URL = import.meta.env.VITE_SAT_TILE_URL || 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+const SAT_LABELS_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
+const SAT_ATTR = 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics';
 
 // Marker ikonkalari: rang va ikonka faqat bizning konstantalardan keladi
 const iconCache = {};
@@ -84,6 +87,14 @@ export default function MapView({ filters, setFilters, refreshKey, onOpen, onPic
   const [me, setMe] = useState(null);
   const [loading, setLoading] = useState(false);
   const [picking, setPicking] = useState(false);
+  const [satellite, setSatellite] = useState(() => localStorage.getItem('ex_sat') === '1');
+
+  const toggleSatellite = () => {
+    setSatellite((v) => {
+      localStorage.setItem('ex_sat', v ? '0' : '1');
+      return !v;
+    });
+  };
 
   useEffect(() => {
     if (!view) return;
@@ -102,7 +113,14 @@ export default function MapView({ filters, setFilters, refreshKey, onOpen, onPic
   return (
     <div className="map-wrap">
       <MapContainer center={START.center} zoom={START.zoom} zoomControl={false} className="map">
-        <TileLayer url={TILE_URL} attribution="&copy; OpenStreetMap contributors" maxZoom={19} />
+        {satellite ? (
+          <>
+            <TileLayer key="sat" url={SAT_URL} attribution={SAT_ATTR} maxZoom={19} />
+            <TileLayer key="sat-labels" url={SAT_LABELS_URL} maxZoom={19} zIndex={5} />
+          </>
+        ) : (
+          <TileLayer key="osm" url={TILE_URL} attribution="&copy; OpenStreetMap contributors" maxZoom={19} />
+        )}
         <ZoomControl position="bottomright" />
         <MapWatcher onChange={setView} />
 
@@ -138,6 +156,10 @@ export default function MapView({ filters, setFilters, refreshKey, onOpen, onPic
           <FilterBar filters={filters} setFilters={setFilters} />
         </div>
       )}
+
+      <button className={`fab basemap ${satellite ? "is-on" : ""}`} onClick={toggleSatellite} aria-label={t('satellite')} title={t('satellite')}>
+        <Icon name="layers" size={22} />
+      </button>
 
       {loading && <div className="map-loading">{t('loading')}</div>}
 
