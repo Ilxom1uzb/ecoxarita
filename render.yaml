@@ -32,10 +32,12 @@ services:
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
-      - key: RESEND_API_KEY     # resend.com dan olinadi
+      - key: BREVO_API_KEY      # brevo.com → SMTP & API → API Keys
         sync: false
-      - key: MAIL_FROM          # masalan: EcoXarita <noreply@sizning-domeningiz.uz>
+      - key: MAIL_FROM_EMAIL    # Brevo'da tasdiqlangan sizning emailingiz
         sync: false
+      - key: MAIL_FROM_NAME
+        value: EcoXarita
     disk:
       name: uploads
       mountPath: /data

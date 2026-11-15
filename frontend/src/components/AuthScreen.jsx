@@ -201,3 +201,13 @@ function Field({ label, children }) {
     </label>
   );
 }
+
+// App.jsx dagi splash ekrani uchun logo
+export function Logo({ size = 34 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 34 34" aria-hidden="true">
+      <circle cx="17" cy="17" r="17" fill="#1F5C43" />
+      <path d="M9 20c3-7 10-10 16-9-1 6-6 11-13 12-2 .3-3.3-1.3-3-3z" fill="#fff" />
+    </svg>
+  );
+}
